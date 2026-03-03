@@ -1,15 +1,15 @@
-name: CI
+name: CI for Formatter and Linter
 
 on:
   push:
     branches:
-      - master  # ou main, selon la branche par défaut de ton repo
+      - master  # ou main, selon ta branche par défaut
   pull_request:
     branches:
       - master  # ou main
 
 jobs:
-  pre-commit:
+  formatter:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,22 +19,22 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'  # Utilise la version de Python de ton choix
+        python-version: '3.12'  # Utilise la version Python que tu veux
 
     - name: Install dependencies
       run: |
         python -m venv venv
         source venv/bin/activate
         pip install --upgrade pip
-        pip install -r requirements.txt  # Assure-toi que ton fichier requirements.txt est bien présent
+        pip install -r requirements.txt
         pip install pre-commit
 
-    - name: Run pre-commit hooks
+    - name: Run pre-commit hooks for formatting
       run: |
         source venv/bin/activate
-        pre-commit run --all-files  # Cela exécutera tous les hooks définis dans ton fichier .pre-commit-config.yaml
+        pre-commit run --all-files  # Exécute tous les hooks, y compris black
 
-  tests:
+  linter:
     runs-on: ubuntu-latest
 
     steps:
@@ -44,22 +44,17 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: '3.12'  # Utilise la version Python que tu veux
 
     - name: Install dependencies
       run: |
         python -m venv venv
         source venv/bin/activate
         pip install --upgrade pip
-        pip install -r requirements.txt  # Installe tes dépendances, y compris les linters et formatters
-        pip install pre-commit black flake8
+        pip install -r requirements.txt
+        pip install pre-commit
 
-    - name: Run tests with black
+    - name: Run pre-commit hooks for linting
       run: |
         source venv/bin/activate
-        black --check .  # Vérifie que le formatage du code est correct
-
-    - name: Run tests with flake8
-      run: |
-        source venv/bin/activate
-        flake8 .  # Vérifie le code avec flake8 (linter)
+        pre-commit run --all-files  
